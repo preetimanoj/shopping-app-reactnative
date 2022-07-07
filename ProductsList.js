@@ -25,6 +25,15 @@ export function ProductsList ({navigation}) {
   });
   
   return (
+    <>
+    <Text>Search bar</Text>
+    <View style={styles.catogories}>
+      <Text style={styles.catoText}>Electronics </Text>
+      <Text>Electronics </Text>
+      <Text>Electronics </Text>
+      <Text>Electronics </Text>
+    </View>
+    <Text>Categories </Text>
     <FlatList
       style={styles.productsList}
       // contentContainerStyle={styles.productsListContainer}
@@ -32,6 +41,7 @@ export function ProductsList ({navigation}) {
       data={products}
       renderItem={renderProduct}
     />
+    </>
   );
 }
 

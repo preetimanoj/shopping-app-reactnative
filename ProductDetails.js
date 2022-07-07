@@ -37,6 +37,10 @@ export function ProductDetails({route}) {
           <Text style={styles.name}>{product.name}</Text>
           <Text style={styles.price}>$ {product.price}</Text>
           <Text style={styles.description}>{product.description}</Text>
+          <Button
+            // onPress={onAddToCart}
+            title="- Qty +"  
+            / >
             <Button
             // onPress={onAddToCart}
             title="Add to cart"
