@@ -20,11 +20,11 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     // borderRadius: 16,
-    // shadowOpacity: 0.2,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     shadowColor: 'black',
     
-    // elevation: 1,
+    elevation: 1,
     // marginVertical: 20,
   },
   thumb: {
