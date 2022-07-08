@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProductsList } from './ProductsList.js';
 import { ProductDetails } from './ProductDetails.js';
 import { Cart } from './Cart.js';
+import { Login } from './Login';
+import { Register } from './Register';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +16,16 @@ export default function App() {
   
     <NavigationContainer>
     <Stack.Navigator>
+    <Stack.Screen name='Login' component={Login} 
+      options={({ navigation }) => ({
+        title: 'Login',
+        headerTitleStyle: styles.headerTitle,
+      })} />
+      <Stack.Screen name='Register' component={Register} 
+      options={({ navigation }) => ({
+        title: 'Login',
+        headerTitleStyle: styles.headerTitle,
+      })} />
       <Stack.Screen name='Products' component={ProductsList} 
       options={({ navigation }) => ({
         title: 'Products',
@@ -41,6 +53,7 @@ export default function App() {
         //  <CartIcon navigation={navigation}/>,
       })} />
     </Stack.Navigator>
+    
   </NavigationContainer>
   );
 }
