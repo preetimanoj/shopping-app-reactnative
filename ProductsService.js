@@ -34,8 +34,9 @@ export function getProduct(id) {
 }
 
 export function getProductCat(cat) {
-    var temp =[];
-     temp =  PRODUCTS.filter((product) => (product.category == cat));
-    console.log("temp  ",temp);
-    return temp;
+    return PRODUCTS.filter((product) => (product.category == cat));
+}
+
+export function getProductSearch(val) {
+    return PRODUCTS.filter((product) => (product.name == val));
 }

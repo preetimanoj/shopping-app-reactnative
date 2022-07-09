@@ -12,9 +12,10 @@ import {
 import { getProduct } from './ProductsService.js';
 // import { CartContext } from './CartContext';?
 
-export function ProductDetails({route}) {
+export function ProductDetails({route,navigation}) {
   const { productId } = route.params;
   const [product, setProduct] = useState({});
+  const [qty,setQty] = useState(0);
   
   // const { addItemToCart } = useContext(CartContext);
   
@@ -26,6 +27,16 @@ export function ProductDetails({route}) {
   //   addItemToCart(product.id);
   // }
   
+  const changeQty = (change) =>{
+    if(change == "add"){
+      setQty(qty+1);
+    }else if(change == "sub" && qty>0){
+      setQty(qty-1);
+    }
+  }
+
+
+
   return (
     <SafeAreaView>
       <ScrollView>
@@ -37,14 +48,17 @@ export function ProductDetails({route}) {
           <Text style={styles.name}>{product.name}</Text>
           <Text style={styles.price}>$ {product.price}</Text>
           <Text style={styles.description}>{product.description}</Text>
-          <Button
-            // onPress={onAddToCart}
-            title="- Qty +"  
-            / >
-            <Button
-            // onPress={onAddToCart}
-            title="Add to cart"
-            / >
+
+          <View style={styles.catogories}>
+            <Text style={styles.catoText}>Quantity: </Text>
+            <Text style={styles.catoText} onPress={()=>{changeQty("sub")}}>- </Text>
+            <Text style={styles.catoText}>{qty}</Text>
+            <Text style={styles.catoText} onPress={()=>{changeQty("add")}}>+ </Text>
+          </View>
+    
+      
+            <Text style={styles.cart} onPress={()=>{navigation.navigate('Cart');}}>Add to cart </Text>
+            <Text style={styles.cart} onPress={()=>{navigation.navigate('Cart');}}>Go to cart </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -87,4 +101,32 @@ const styles = StyleSheet.create({
     color: '#787878',
     marginBottom: 16,
   },
+  catogories:{
+    flexDirection: 'row',
+  },
+  catoText:{
+    fontSize: 22,
+    marginHorizontal:5,
+    // backgroundColor:'grey',
+    paddingHorizontal:10,
+    paddingVertical:10,
+    fontWeight: 'bold',
+  },
+  cart:{
+    paddingVertical: 10,
+    paddingHorizontal:30,
+    backgroundColor:'#f5e042',
+    height:50,
+    alignItems:'center',
+    width:'100%',
+    fontSize: 22,
+    marginVertical: 10,
+    // borderWidth:'2',
+    borderRadius: 25,
+  
+    fontWeight: 'bold',
+    elevation: 1,
+    shadowOpacity: 0.2,
+    // color:'white'
+  }
 });
