@@ -1,21 +1,23 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAC_kjgxQRdqnmt3V_sCDEK2yNh0YcXqY0",
-  authDomain: "shopping-reactnative-467dd.firebaseapp.com",
-  projectId: "shopping-reactnative-467dd",
-  storageBucket: "shopping-reactnative-467dd.appspot.com",
-  messagingSenderId: "995070998575",
-  appId: "1:995070998575:web:a9e9e3562e85ac7d78aeda",
-  measurementId: "G-42MT79624F"
+  apiKey: "AIzaSyD-PttqpVfYIafQZ-rERQkK4WoSps9AlGk",
+  authDomain: "team-404-js-project.firebaseapp.com",
+  databaseURL: "https://team-404-js-project-default-rtdb.firebaseio.com",
+  projectId: "team-404-js-project",
+  storageBucket: "team-404-js-project.appspot.com",
+  messagingSenderId: "769973768801",
+  appId: "1:769973768801:web:c40da4668e2309ab965020"
 };
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
 const analytics = getAnalytics(app);
+
+export const db = getFirestore(app);
