@@ -8,8 +8,8 @@ import { ProductDetails } from './ProductDetails.js';
 import { Cart } from './Cart.js';
 import { Admin } from './Admin.js';
 import { List } from './List.js';
-import { Login } from './Login';
-import { Register } from './Register';
+// import { Login } from './Login';
+// import { Register } from './Register';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +17,7 @@ export default function App() {
   return (
     <NavigationContainer>
     <Stack.Navigator>
-    <Stack.Screen name='Login' component={Login} 
+    {/* <Stack.Screen name='Login' component={Login} 
       options={({ navigation }) => ({
         title: 'Login',
         headerTitleStyle: styles.headerTitle,
@@ -26,7 +26,7 @@ export default function App() {
       options={({ navigation }) => ({
         title: 'Login',
         headerTitleStyle: styles.headerTitle,
-      })} />
+      })} /> */}
       <Stack.Screen name='Products' component={ProductsList} 
       options={({ navigation }) => ({
         title: 'Products',

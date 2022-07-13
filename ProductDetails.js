@@ -10,7 +10,7 @@ import {
   } from 'react-native';
 
 import { getProduct } from './ProductsService.js';
-// import { CartContext } from './CartContext';?
+import { CartContext } from './CartContext';
 
 export function ProductDetails({route,navigation}) {
   const { productId } = route.params;
@@ -20,12 +20,13 @@ export function ProductDetails({route,navigation}) {
   // const { addItemToCart } = useContext(CartContext);
   
   useEffect(() => {
+    console.log("get fn")
     setProduct(getProduct(productId));
   });
   
-  // function onAddToCart() {
-  //   addItemToCart(product.id);
-  // }
+  function onAddToCart() {
+    addItemToCart(product.id);
+  }
   
   const changeQty = (change) =>{
     if(change == "add"){
@@ -35,6 +36,13 @@ export function ProductDetails({route,navigation}) {
     }
   }
 
+  const addToCart = (change) =>{
+    //add prod to array
+    //
+    console.log("add fn")
+    // addItemToCart(product.id);
+    navigation.navigate('Cart');
+  }
 
 
   return (
@@ -57,7 +65,7 @@ export function ProductDetails({route,navigation}) {
           </View>
     
       
-            <Text style={styles.cart} onPress={()=>{navigation.navigate('Cart');}}>Add to cart </Text>
+            <Text style={styles.cart} onPress={addToCart}>Add to cart </Text>
             <Text style={styles.cart} onPress={()=>{navigation.navigate('Cart');}}>Go to cart </Text>
         </View>
       </ScrollView>

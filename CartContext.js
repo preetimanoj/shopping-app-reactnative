@@ -9,8 +9,9 @@ export function CartProvider(props) {
   
   function addItemToCart(id) {
     const product = getProduct(id);
-
+    console.log("added to cart",product)
     setItems((prevItems) => {
+      console.log("prev item",prevItems)
       const item = prevItems.find((item) => (item.id == id));
       if(!item) {
           return [...prevItems, {
