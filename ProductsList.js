@@ -4,15 +4,7 @@ import { View, Text, FlatList, StyleSheet,TextInput,Button } from 'react-native'
 import { Product } from './/Product.js';
 // import { getProducts, getProductCat,getProductSearch } from './ProductsService.js';
 import { db } from "./Firebase";
-import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-
+import {collection, getDocs,} from "firebase/firestore";
 
 const usersCollectionRef = collection(db, "products");
 
@@ -29,25 +21,24 @@ export function ProductsList ({navigation}) {
   const getProducts = async () => {
     const data = await getDocs(usersCollectionRef);
     setProducts(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    console.log(products)
+    console.log(products);
   };
 
   
   useEffect(() => {
-    
+  
     getProducts();
-    // setProducts(getProductsDb());
+  
 
   },[]);
 
   const sortCatogory = (cat) =>{
     if(cat == "all"){
       console.log("all")
-      setProducts(getProducts());
+      getProducts();
     }else{
       var seachcat = products.filter((product) => (product.category == cat));
       setProducts(seachcat);
-      // setProducts( getProductCat(cat));
     }
   }
   const searchProducts = () => {
@@ -76,7 +67,7 @@ export function ProductsList ({navigation}) {
       <Text style={styles.catoText} onPress={()=>{sortCatogory("clothes")}}>Clothes </Text>
       <Text style={styles.catoText} onPress={()=>{sortCatogory("decor")}}>Decor </Text>
     </View>
-    {console.log("products ==> ", products)}
+   
     <FlatList
       style={styles.productsList}
       contentContainerStyle={styles.productsListContainer}
@@ -86,7 +77,7 @@ export function ProductsList ({navigation}) {
       <Product name={item.name} price={item.price} image={item.img} 
       onPress={() => {
         navigation.navigate('ProductDetails', {
-          productId: item.id,
+          selproduct: item,
         });
       }}
       />}

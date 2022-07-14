@@ -9,19 +9,26 @@ import {
   StyleSheet
   } from 'react-native';
 
-import { getProduct } from './ProductsService.js';
-import { CartContext } from './CartContext';
+
+
+import { db } from "./Firebase";
+import {
+  collection,
+  addDoc,
+} from "firebase/firestore";
+
+
+const usersCollectionRef = collection(db, "cart");
 
 export function ProductDetails({route,navigation}) {
-  const { productId } = route.params;
+  const { selproduct } = route.params;
   const [product, setProduct] = useState({});
   const [qty,setQty] = useState(0);
   
   // const { addItemToCart } = useContext(CartContext);
   
   useEffect(() => {
-    console.log("get fn")
-    setProduct(getProduct(productId));
+    setProduct(selproduct);
   });
   
   function onAddToCart() {
@@ -36,12 +43,17 @@ export function ProductDetails({route,navigation}) {
     }
   }
 
+  
+  const createUser = async () => {
+    console.log("in add",product,qty)
+    let abc = await addDoc(usersCollectionRef,{ name: product.name, price:product.price, img:product.img, quantity:qty });
+    console.log(abc?.docs)
+  };
+
+ 
   const addToCart = (change) =>{
-    //add prod to array
-    //
-    console.log("add fn")
-    // addItemToCart(product.id);
-    navigation.navigate('Cart');
+    createUser();
+    
   }
 
 
@@ -50,7 +62,10 @@ export function ProductDetails({route,navigation}) {
       <ScrollView>
         <Image
           style={styles.image}
-          source={product.image}
+          source = {{
+            uri: product.img,
+          }}
+          // source={product.img}
         />
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{product.name}</Text>
