@@ -26,6 +26,7 @@ export function AddProduct({ route, navigation }) {
     const addProductToFirebase = async () => {
         let abc = await addDoc(productsCollectionRef, { name: productName, description: description, price: price, img: imageurl });
         console.log("add profuct firebase");
+        navigation.navigate("Admin")
     }
 
     return (

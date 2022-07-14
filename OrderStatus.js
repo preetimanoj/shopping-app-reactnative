@@ -1,29 +1,20 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet,Image } from 'react-native';
-import { CartContext } from './CartContext';
 import { db } from "./Firebase";
 import {collection, getDocs,addDoc} from "firebase/firestore";
 
-const usersCollectionRef = collection(db, "cart");
+
 const orderCollectionRef = collection(db, "orders");
 
-export function Cart ({navigation}) {
-
-  // const {items, getItemsCount, getTotalPrice} = useContext(CartContext);
-  
+export function Order ({navigation}) {
 
   const [products, setProducts] = useState();
-  const [ftotal,setFtotal] = useState(0);
-  
 
     const getCartProducts = async () => {
-      const data = await getDocs(usersCollectionRef);
+      const data = await getDocs(orderCollectionRef);
       var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
       setProducts(temp);
-      var ntemp = temp.map(e=> e.price*e.quantity);
-      var sum = ntemp.reduce(function(a, b) { return a + b; }, 0);
-      setFtotal(sum)
-      console.log("get cart prdts",temp);
+    console.log("order list == > ", temp)
     };
 
 
@@ -33,19 +24,13 @@ export function Cart ({navigation}) {
     },[]);
 
 
-    const addOrder = async () => {
-      console.log("in add")
-      let abc = await addDoc(orderCollectionRef,
-        // { itemName: product.name, price:product.price, img:product.img, quantity:qty }
-        {customerName : "Merlin", totprice: ftotal, orderstat: 'Recieved',cart:products }
-        );
-      
-      
-        navigation.navigate('Order');
-      console.log(abc?.docs)
-    };
+  
+const navOrderDetails = (item) => {
+    navigation.navigate('Order');
 
-    
+}
+
+
   function Totals() { 
     return (
       <View>
@@ -64,30 +49,32 @@ export function Cart ({navigation}) {
   return (
     <>
     
-     <FlatList
+    <FlatList
       style={styles.itemsList}
       contentContainerStyle={styles.itemsListContainer}
       data={products}
       renderItem={({item}) => 
-     <>
-    
-     <View style={styles.cartLine}>
-        <Image
-          style={styles.image}
-          source = {{
-            uri: item.img,
-          }}
-        />
-          <Text style={styles.lineLeft}>{item.name} x {item.quantity}</Text>
-          <Text style={styles.lineRight}>$ {item.price * item.quantity}</Text>
-         
-       </View>
-     </>
+            <View style={styles.orderLine} onPress={()=>{navOrderDetails(item)}}>
+            <Text>Order Id: {item.id}</Text>
+            <Text>Customer: {item.customerName} </Text>
+            <Text>Totla Price: {item.totprice}</Text>
+            <Text style={{ fontWeight: 'bold', }}> Order Status: {item.orderstat}</Text>
+            <View style={styles.cartLine}>
+            {console.log("item ==>", item.cart.length)}
+            
+            </View>
+    </View>
+     
 
      }
       keyExtractor={(item) => item.id}
-      ListFooterComponent={Totals}
+    //   ListFooterComponent={Totals}
     />
+
+
+
+
+
    
     
     </>
@@ -132,5 +119,11 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
     marginRight: 15
+  },
+  orderLine:{
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    margin: 10,
+    backgroundColor: 'lightgrey'
   }
 });
