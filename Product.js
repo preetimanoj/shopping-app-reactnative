@@ -2,11 +2,15 @@ import React from 'react';
 import {Text, Image, View, StyleSheet, TouchableOpacity} from 'react-native';
 
 export function Product({name, price, image, onPress}) {
+  console.log("image==>", image)
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <Image
         style={styles.thumb}
-        source={image}
+        source={{
+          uri: image,
+        }}
+        // source={{image}}
       />
       <View style={styles.infoContainer}>
         <Text style={styles.name}>{name}</Text>
