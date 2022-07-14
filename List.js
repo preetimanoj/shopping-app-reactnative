@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   View,
@@ -16,12 +16,14 @@ import { addDoc, collection, getDocs } from "firebase/firestore"
 
 const collectionRef = collection(db, "categories")
 const productsCollectionRef = collection(db, "products");
+const orderCollectionRef = collection(db, "orders");
 
 export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
   let [categoryAdd, setCategoryAdd] = useState("")
   let [categoryList, setCategoryList] = useState([])
   const { list } = route.params;
+  const [products_, setProducts_] = useState();
 
   const [products, setProducts] = useState();
 
@@ -97,7 +99,10 @@ export function List({ route, navigation }) {
   }
   getCategoryFromFirebase();
 
+  const navOrderDetails = (item) => {
+    navigation.navigate('Order');
 
+  }
 
   const addCategoryToFirebase = async () => {
     let addToFirebase = await addDoc(collectionRef, { name: categoryAdd })
@@ -105,6 +110,18 @@ export function List({ route, navigation }) {
     setVisible(false)
     getCategoryFromFirebase()
   }
+
+  const getCartProducts = async () => {
+    const data = await getDocs(orderCollectionRef);
+    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    setProducts_(temp);
+    console.log("order list == > ", temp)
+  };
+  useEffect(() => {
+    console.log("*************")
+    getCartProducts();
+    // setTotal(getTotalPrice());
+  },[]);
 
   const renderItem = ({ item }) => <Item title={item.name} />;
 
@@ -224,60 +241,32 @@ export function List({ route, navigation }) {
     );
   } else if (list === "orders") {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-
-        <Dialog
-          visible={visibleDetails}
-          onTouchOutside={() => {
-            setVisibleDetails(false)
-          }}
-        >
-          <DialogContent style={{ width: 280}}>
-            <View style={styles.dialog}>
-              <Text>Order No: </Text>
-              <TextInput style={styles.InputText}>{selectedOrder.orderNo}</TextInput>
-            </View>
-            <View style={styles.dialog}>
-              <Text>Customer Name:  </Text>
-              <TextInput style={styles.InputText}>{selectedOrder.orderNo}</TextInput>
-            </View>            
-          </DialogContent>
-        </Dialog>
+      // <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View>
+        
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
           ORDERS
         </Text>
         <FlatList
-          data={orderList}
-          style={{ marginTop: "10%" }}
-          renderItem={({ item }) => (
-            <View style={styles.orderItem}>
-              {/* <View style={{ minWidth: "50%", width: "auto" }}> */}
-              <Text
-                style={{ minWidth: "80%", width: "auto" }}
-               onPress={() => {showDetails(item)}}>
-                {item.customerName}
-              </Text>
-              <FontAwesome
-                name="edit"
-                size={20}
-                color="#3b7eeb"
-                onPress={() => {
-                  editCustomer(1);
-                }}
-              />
-              <FontAwesome
-                name="remove"
-                size={20}
-                style={{ marginLeft: 4 }}
-                color="#3b7eeb"
-                onPress={() => {
-                  removeCustomer(1);
-                }}
-              />
-              {/* </View> */}
-              
-            </View>
-          )}
+          style={styles.itemsList}
+          contentContainerStyle={styles.itemsListContainer}
+          data={products_}
+          renderItem={({item}) => 
+                <View style={styles.orderLine} onPress={()=>{navOrderDetails(item)}}>
+                <Text>Order Id: {item.id}</Text>
+                <Text>Customer: {item.customerName} </Text>
+                <Text>Totla Price: {item.totprice}</Text>
+                <Text style={{ fontWeight: 'bold', }}> Order Status: {item.orderstat}</Text>
+                <View style={styles.cartLine}>
+                {/* {console.log("item ==>", item.cart.length)} */}
+                
+                </View>
+        </View>
+        
+
+        }
+          keyExtractor={(item) => item.id}
+        //   ListFooterComponent={Totals}
         />
       </View>
     );
@@ -369,5 +358,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
+  },
+  itemsList: {
+    backgroundColor: '#eeeeee',
+  },
+  itemsListContainer: {
+    backgroundColor: '#eeeeee',
+    paddingVertical: 8,
+    marginHorizontal: 8,
+  },orderLine:{
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+    margin: 10,
+    backgroundColor: 'lightgrey'
+  },
+  cartLine: { 
+    flexDirection: 'row',
   },
 });
