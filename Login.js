@@ -1,102 +1,125 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-  Button,
-  TouchableOpacity,
-} from "react-native";
+import { useNavigation } from '@react-navigation/core'
+import React, { useEffect, useState } from 'react'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
-import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
- 
-export function Login({navigation}) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
- 
-  return (
-    <View style={styles.container}>
-      {/* <Image style={styles.image} source={require("./assets/log2.png")} /> */}
- 
-      <StatusBar style="auto" />
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.InputText}
-          placeholder="Email"
-          placeholderTextColor="#003f5c"
-          onChangeText={(email) => setEmail(email)}
-        />
-      </View>
- 
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.InputText}
-          placeholder="Password"
-          placeholderTextColor="#003f5c"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-      </View>
-    <View style={styles.extra}>
-        <TouchableOpacity onPress={() =>{navigation.navigate('Register');}}>
-        <Text style={styles.forgot_button}>Register   </Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-        <Text style={styles.forgot_button}>   Forgot Password?</Text>
-      </TouchableOpacity>
-    </View>
- 
-      <TouchableOpacity style={styles.loginBtn} onPress={() =>{navigation.navigate('Products');}}>
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
-    </View>
-  );
+const auth = getAuth();
+export default function Login() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const navigation = useNavigation()
+
+    const handleSignUp = () => {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                console.log('Registered with:', user.email);
+                if (user.email == "admin@gmail.com") {
+                    navigation.navigate("Admin")
+                } else {
+                    navigation.navigate("Products")
+                }
+            })
+            .catch(error => alert(error.message))
+    }
+
+    const handleLogin = () => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                console.log('Logged in with:', user.email);
+                if (user.email == "admin@gmail.com") {
+                    navigation.navigate("Admin")
+                } else {
+                    navigation.navigate("Products")
+                }
+            })
+            .catch(error => alert(error.message))
+    }
+
+    return (
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior="padding"
+        >
+            <View style={styles.inputContainer}>
+                <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={text => setEmail(text)}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={text => setPassword(text)}
+                    style={styles.input}
+                    secureTextEntry
+                />
+            </View>
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    onPress={handleLogin}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>Login</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={handleSignUp}
+                    style={[styles.button, styles.buttonOutline]}
+                >
+                    <Text style={styles.buttonOutlineText}>Register</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
+    )
 }
- 
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
- 
-  image: {
-    marginBottom: 40,
-  },
- 
-  inputView: {
-    alignItems: "center",
-  },
- 
-  InputText: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 30,
-    border: '1px solid #000',
-    height: 50,
-    marginBottom: 20,
-    width: "160%",
-    
-  },
- 
-  forgot_button: {
-    height: 30,
-    marginBottom: 30,
-  },
- 
-  loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#fec02e",
-  },
-  extra: {
-    flexDirection: 'row',
-  }
-});
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    inputContainer: {
+        width: '80%'
+    },
+    input: {
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 10,
+        marginTop: 5,
+    },
+    buttonContainer: {
+        width: '60%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 40,
+    },
+    button: {
+        backgroundColor: '#0782F9',
+        width: '100%',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    buttonOutline: {
+        backgroundColor: 'white',
+        marginTop: 5,
+        borderColor: '#0782F9',
+        borderWidth: 2,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: '700',
+        fontSize: 16,
+    },
+    buttonOutlineText: {
+        color: '#0782F9',
+        fontWeight: '700',
+        fontSize: 16,
+    },
+})
