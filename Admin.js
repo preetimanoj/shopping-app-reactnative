@@ -9,7 +9,7 @@ import { List } from "./List";
 // const Stack = createNativeStackNavigator();
 
 export function Admin({navigation}) {
-  return ( <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+  return ( <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-evenly' }}>
 
   <Button style={styles.buttonSt} onPress={() => {
           navigation.navigate('List', { "list": "category"});

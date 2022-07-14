@@ -23,7 +23,7 @@ const usersCollectionRef = collection(db, "cart");
 export function ProductDetails({route,navigation}) {
   const { selproduct } = route.params;
   const [product, setProduct] = useState({});
-  const [qty,setQty] = useState(0);
+  const [qty,setQty] = useState(1);
   
   // const { addItemToCart } = useContext(CartContext);
   
@@ -31,9 +31,7 @@ export function ProductDetails({route,navigation}) {
     setProduct(selproduct);
   });
   
-  function onAddToCart() {
-    addItemToCart(product.id);
-  }
+  
   
   const changeQty = (change) =>{
     if(change == "add"){
