@@ -15,14 +15,10 @@ import { db } from "./Firebase";
 import { addDoc, collection, getDocs } from "firebase/firestore"
 
 const collectionRef = collection(db, "categories")
-const collectionRefOrder = collection(db, "orders")
 export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
-  let [visibleDetails, setVisibleDetails] = useState(false);
   let [categoryAdd, setCategoryAdd] = useState("")
   let [categoryList, setCategoryList] = useState([])
-  let [orderList, setOrderList] = useState([])
-  let [selectedOrder, setSelectedOrder] = useState([])
   const { list } = route.params;
 
   // let categories = [
@@ -62,13 +58,6 @@ export function List({ route, navigation }) {
   function addtoCategory(type) {
     setVisible(true)
   }
-  function showDetails(item) {
-    console.log(item);
-    setVisibleDetails(true);
-    var temp = item;
-    setSelectedOrder(item);
-    console.log("---------",selectedOrder)
-  }
 
   function editCategory(type) {
     console.log("=====", type);
@@ -84,7 +73,7 @@ export function List({ route, navigation }) {
     console.log("=====", type);
   }
   function addToProducts(type) {
-    console.log("=====", type);
+    navigation.navigate("AddProduct")
   }
   function removeProducts(type) {
     console.log("=====", type);
@@ -119,19 +108,13 @@ export function List({ route, navigation }) {
   getCategoryFromFirebase();
 
 
+
   const addCategoryToFirebase = async () => {
     let addToFirebase = await addDoc(collectionRef, { name: categoryAdd })
     console.log(addToFirebase?.docs)
     setVisible(false)
     getCategoryFromFirebase()
   }
-
-  const getOrdersFromFirebase = async () => {
-    const data1 = await getDocs(collectionRefOrder);
-    setOrderList(data1.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    // console.log(orderList);
-  }
-  getOrdersFromFirebase();
 
   const renderItem = ({ item }) => <Item title={item.name} />;
 
@@ -397,8 +380,4 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
   },
-  dialog: {
-    flexDirection: "row",
-    paddingTop: 2,
-  }
 });
