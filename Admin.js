@@ -8,8 +8,9 @@ import { List } from "./List";
 // students.sort((st) => return st.gpa - st.gpa) 
 // const Stack = createNativeStackNavigator();
 
-export function Admin({ navigation }) {
-  return (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+export function Admin({navigation}) {
+  return ( 
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-evenly' }}>
 
     <Button style={styles.buttonSt} onPress={() => {
       navigation.navigate('List', { "list": "category" });
