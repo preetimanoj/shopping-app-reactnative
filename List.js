@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   View,
@@ -15,41 +15,31 @@ import { db } from "./Firebase";
 import { addDoc, collection, getDocs } from "firebase/firestore"
 
 const collectionRef = collection(db, "categories")
+const productsCollectionRef = collection(db, "products");
+
 export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
   let [categoryAdd, setCategoryAdd] = useState("")
   let [categoryList, setCategoryList] = useState([])
   const { list } = route.params;
 
-  // let categories = [
-  //   { id: 1, name: "Electronics" },
-  //   { id: 2, name: "Groceries" },
-  //   { id: 3, name: "Toys" },
-  // ];
+  const [products, setProducts] = useState();
 
-  let products = [
-    {
-      id: 1,
-      category: "Electronics",
-      name: "Headphones",
-      image:
-        "https://www.beatsbydre.com/content/dam/beats/web/product/headphones/solo3-wireless/pdp/solo3-pdp-p02.png.large.1x.png",
-    },
-    {
-      id: 2,
-      name: "Groceries",
-      name: "SweetHome Cupcake",
-      image:
-        "https://i.pinimg.com/originals/17/52/3b/17523b0b0c03787eb10b2ba3a24ceb33.jpg",
-    },
-    {
-      id: 3,
-      name: "Toys",
-      name: "FastLane Toy Car",
-      image:
-        "https://www.ethanproductions.com/hotwheels-newDB/images/nocode20210727234127236.jpg",
-    },
-  ];
+  const getProducts = async () => {
+    const data = await getDocs(productsCollectionRef);
+    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setProducts(temp);
+    console.log("'asdfasf")
+    console.log(temp);
+  };
+
+
+  useEffect(() => {
+
+    getProducts();
+
+  }, []);
+
 
   // const data = await getDocs(collectionRef);
   // setCategoryList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
