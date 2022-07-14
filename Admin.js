@@ -9,38 +9,39 @@ import { List } from "./List";
 // const Stack = createNativeStackNavigator();
 
 export function Admin({navigation}) {
-  return ( <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-evenly' }}>
+  return ( 
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-evenly' }}>
 
-  <Button style={styles.buttonSt} onPress={() => {
-          navigation.navigate('List', { "list": "category"});
-        }} title="Categories"/>
-  <Button style={styles.buttonSt} onPress={() => {
-          navigation.navigate('List', { "list": "products"});
-        }} title="Product"/>
-  <Button style={styles.buttonSt} onPress={() => {
-          navigation.navigate('List', { "list": "customers"});
-        }} title="Customer"/>
-  <Button style={styles.buttonSt} onPress={() => {
-          navigation.navigate('List', { "list": "orders"});
-        }} title="Orders"/>
-</View>
-    
+    <Button style={styles.buttonSt} onPress={() => {
+      navigation.navigate('List', { "list": "category" });
+    }} title="Categories" />
+    <Button style={styles.buttonSt} onPress={() => {
+      navigation.navigate('List', { "list": "products" });
+    }} title="Product" />
+    <Button style={styles.buttonSt} onPress={() => {
+      navigation.navigate('List', { "list": "customers" });
+    }} title="Customer" />
+    <Button style={styles.buttonSt} onPress={() => {
+      navigation.navigate('List', { "list": "orders" });
+    }} title="Orders" />
+  </View>
+
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    headerTitle: {
-      fontSize: 20
-    },
-    buttonSt: {
-        marginTop: 50,
-        padding: 20
-    }
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    fontSize: 20
+  },
+  buttonSt: {
+    marginTop: 50,
+    padding: 20
+  }
+});
 
