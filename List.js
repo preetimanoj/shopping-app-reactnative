@@ -15,12 +15,16 @@ import { db } from "./Firebase";
 import { addDoc, collection, getDocs } from "firebase/firestore"
 
 const collectionRef = collection(db, "categories")
+const customerCollectionRef = collection(db, "customers")
+
 const productsCollectionRef = collection(db, "products");
 
 export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
   let [categoryAdd, setCategoryAdd] = useState("")
   let [categoryList, setCategoryList] = useState([])
+  let [customerList, setCustomerList] = useState([])
+
   const { list } = route.params;
 
   const [products, setProducts] = useState();
@@ -97,7 +101,12 @@ export function List({ route, navigation }) {
   }
   getCategoryFromFirebase();
 
-
+  const getCustomersFromFirebase = async () => {
+    const data = await getDocs(customerCollectionRef);
+    
+    setCustomerList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+  }
+  getCustomersFromFirebase()
 
   const addCategoryToFirebase = async () => {
     let addToFirebase = await addDoc(collectionRef, { name: categoryAdd })
@@ -222,110 +231,27 @@ export function List({ route, navigation }) {
         </View>
       </View>
     );
-  } else if (list === "orders") {
-    return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-
-        <Dialog
-          visible={visibleDetails}
-          onTouchOutside={() => {
-            setVisibleDetails(false)
-          }}
-        >
-          <DialogContent style={{ width: 280}}>
-            <View style={styles.dialog}>
-              <Text>Order No: </Text>
-              <TextInput style={styles.InputText}>{selectedOrder.orderNo}</TextInput>
-            </View>
-            <View style={styles.dialog}>
-              <Text>Customer Name:  </Text>
-              <TextInput style={styles.InputText}>{selectedOrder.orderNo}</TextInput>
-            </View>            
-          </DialogContent>
-        </Dialog>
-        <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
-          ORDERS
-        </Text>
-        <FlatList
-          data={orderList}
-          style={{ marginTop: "10%" }}
-          renderItem={({ item }) => (
-            <View style={styles.orderItem}>
-              {/* <View style={{ minWidth: "50%", width: "auto" }}> */}
-              <Text
-                style={{ minWidth: "80%", width: "auto" }}
-               onPress={() => {showDetails(item)}}>
-                {item.customerName}
-              </Text>
-              <FontAwesome
-                name="edit"
-                size={20}
-                color="#3b7eeb"
-                onPress={() => {
-                  editCustomer(1);
-                }}
-              />
-              <FontAwesome
-                name="remove"
-                size={20}
-                style={{ marginLeft: 4 }}
-                color="#3b7eeb"
-                onPress={() => {
-                  removeCustomer(1);
-                }}
-              />
-              {/* </View> */}
-              
-            </View>
-          )}
-        />
-      </View>
-    );
-  }else {
+  } else {
+    // getCustomersFromFirebase();
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
           CUSTOMERS
         </Text>
         <FlatList
-          data={products}
+          data={customerList}
           style={{ marginTop: "10%" }}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <TextInput
                 style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}
               >
-                {item.name}{" "}
+                {item.email}{" "}
               </TextInput>
-              <FontAwesome
-                name="edit"
-                size={20}
-                color="#fff"
-                onPress={() => {
-                  editCustomer(1);
-                }}
-              />
-              <FontAwesome
-                name="remove"
-                size={20}
-                style={{ marginLeft: 4 }}
-                color="#fff"
-                onPress={() => {
-                  removeCustomer(1);
-                }}
-              />
+              
             </View>
           )}
         />
-
-        <View style={{ minWidth: "80%", width: "auto", marginBottom: "30%" }}>
-          <Button
-            onPress={() => {
-              addCustomer(1);
-            }}
-            title="Add Customer"
-          />
-        </View>
       </View>
     );
   }
@@ -347,15 +273,6 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "#3b7eeb",
-    padding: 10,
-    alignItems: "center",
-    marginVertical: 8,
-    marginHorizontal: 16,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-  },
-  orderItem: {
-    backgroundColor: "#eeeeee",
     padding: 10,
     alignItems: "center",
     marginVertical: 8,
