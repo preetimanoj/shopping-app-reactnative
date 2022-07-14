@@ -8,16 +8,15 @@ import { getAuth } from "firebase/auth";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD-PttqpVfYIafQZ-rERQkK4WoSps9AlGk",
-  authDomain: "team-404-js-project.firebaseapp.com",
-  databaseURL: "https://team-404-js-project-default-rtdb.firebaseio.com",
-  projectId: "team-404-js-project",
-  storageBucket: "team-404-js-project.appspot.com",
-  messagingSenderId: "769973768801",
-  appId: "1:769973768801:web:c40da4668e2309ab965020"
-};
 
+const firebaseConfig = {
+  apiKey: "AIzaSyAqK75RCDonwyym9njzmFrnVxiNkGHO4yA",
+  authDomain: "react-college-5a37d.firebaseapp.com",
+  projectId: "react-college-5a37d",
+  storageBucket: "react-college-5a37d.appspot.com",
+  messagingSenderId: "516343036707",
+  appId: "1:516343036707:web:5fbfa1442e88bd0f832a96"
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
