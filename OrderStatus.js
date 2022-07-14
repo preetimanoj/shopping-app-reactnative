@@ -31,19 +31,7 @@ const navOrderDetails = (item) => {
 }
 
 
-  function Totals() { 
-    return (
-      <View>
-       <View style={styles.cartLineTotal}>
-          <Text style={[styles.lineLeft, styles.lineTotal]}>Total</Text>
-          <Text style={styles.lineRight}>$ {ftotal}</Text>
-          </View>
-          <Text>All deliveries are currently COD</Text>
-          <Button title='Confirm Order' onPress={addOrder}/>
-       </View>
-    );
-  }
- 
+
 
   
   return (
