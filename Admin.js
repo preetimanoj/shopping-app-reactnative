@@ -20,6 +20,9 @@ export function Admin({navigation}) {
   <Button style={styles.buttonSt} onPress={() => {
           navigation.navigate('List', { "list": "customers"});
         }} title="Customer"/>
+  <Button style={styles.buttonSt} onPress={() => {
+          navigation.navigate('List', { "list": "orders"});
+        }} title="Orders"/>
 </View>
     
   );

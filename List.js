@@ -15,10 +15,14 @@ import { db } from "./Firebase";
 import { addDoc, collection, getDocs } from "firebase/firestore"
 
 const collectionRef = collection(db, "categories")
+const collectionRefOrder = collection(db, "orders")
 export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
+  let [visibleDetails, setVisibleDetails] = useState(false);
   let [categoryAdd, setCategoryAdd] = useState("")
   let [categoryList, setCategoryList] = useState([])
+  let [orderList, setOrderList] = useState([])
+  let [selectedOrder, setSelectedOrder] = useState([])
   const { list } = route.params;
 
   // let categories = [
@@ -57,6 +61,13 @@ export function List({ route, navigation }) {
 
   function addtoCategory(type) {
     setVisible(true)
+  }
+  function showDetails(item) {
+    console.log(item);
+    setVisibleDetails(true);
+    var temp = item;
+    setSelectedOrder(item);
+    console.log("---------",selectedOrder)
   }
 
   function editCategory(type) {
@@ -108,13 +119,19 @@ export function List({ route, navigation }) {
   getCategoryFromFirebase();
 
 
-
   const addCategoryToFirebase = async () => {
     let addToFirebase = await addDoc(collectionRef, { name: categoryAdd })
     console.log(addToFirebase?.docs)
     setVisible(false)
     getCategoryFromFirebase()
   }
+
+  const getOrdersFromFirebase = async () => {
+    const data1 = await getDocs(collectionRefOrder);
+    setOrderList(data1.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    // console.log(orderList);
+  }
+  getOrdersFromFirebase();
 
   const renderItem = ({ item }) => <Item title={item.name} />;
 
@@ -232,7 +249,66 @@ export function List({ route, navigation }) {
         </View>
       </View>
     );
-  } else {
+  } else if (list === "orders") {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+
+        <Dialog
+          visible={visibleDetails}
+          onTouchOutside={() => {
+            setVisibleDetails(false)
+          }}
+        >
+          <DialogContent style={{ width: 280}}>
+            <View style={styles.dialog}>
+              <Text>Order No: </Text>
+              <TextInput style={styles.InputText}>{selectedOrder.orderNo}</TextInput>
+            </View>
+            <View style={styles.dialog}>
+              <Text>Customer Name:  </Text>
+              <TextInput style={styles.InputText}>{selectedOrder.orderNo}</TextInput>
+            </View>            
+          </DialogContent>
+        </Dialog>
+        <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
+          ORDERS
+        </Text>
+        <FlatList
+          data={orderList}
+          style={{ marginTop: "10%" }}
+          renderItem={({ item }) => (
+            <View style={styles.item}>
+              {/* <View style={{ minWidth: "50%", width: "auto" }}> */}
+              <Button
+                style={{ minWidth: "80%", width: "auto" }}
+               onPress={() => {showDetails(item)}} title={item.customerName}>
+                
+              </Button>
+              <FontAwesome
+                name="edit"
+                size={20}
+                color="#fff"
+                onPress={() => {
+                  editCustomer(1);
+                }}
+              />
+              <FontAwesome
+                name="remove"
+                size={20}
+                style={{ marginLeft: 4 }}
+                color="#fff"
+                onPress={() => {
+                  removeCustomer(1);
+                }}
+              />
+              {/* </View> */}
+              
+            </View>
+          )}
+        />
+      </View>
+    );
+  }else {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
@@ -312,4 +388,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
   },
+  dialog: {
+    flexDirection: "row",
+    paddingTop: 2,
+  }
 });
