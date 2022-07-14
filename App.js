@@ -10,6 +10,7 @@ import { Admin } from './Admin.js';
 import { List } from './List.js';
 import Login from './Login.js';
 import { AddProduct } from './AddProduct.js';
+import { Order } from './OrderStatus.js';
 // import { Register } from './Register';
 
 const Stack = createNativeStackNavigator();
@@ -35,7 +36,10 @@ export default function App() {
                 }}> Cart</Text>
                 <Text onPress={() => {
                   navigation.navigate('Admin');
-                }}> Admin</Text></>
+                }}> Admin</Text>
+                <Text onPress={() => {
+                  navigation.navigate('Order');
+                }}> Order</Text></>
             //  <CartIcon navigation={navigation}/>,
           })} />
         <Stack.Screen name='ProductDetails' component={ProductDetails}
@@ -62,6 +66,7 @@ export default function App() {
           })} />
         <Stack.Screen name='Admin' component={Admin} />
         <Stack.Screen name="List" component={List} />
+        <Stack.Screen name="Order" component={Order} />
       </Stack.Navigator>
 
     </NavigationContainer>
