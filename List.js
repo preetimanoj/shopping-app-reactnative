@@ -277,17 +277,17 @@ export function List({ route, navigation }) {
           data={orderList}
           style={{ marginTop: "10%" }}
           renderItem={({ item }) => (
-            <View style={styles.item}>
+            <View style={styles.orderItem}>
               {/* <View style={{ minWidth: "50%", width: "auto" }}> */}
-              <Button
+              <Text
                 style={{ minWidth: "80%", width: "auto" }}
-               onPress={() => {showDetails(item)}} title={item.customerName}>
-                
-              </Button>
+               onPress={() => {showDetails(item)}}>
+                {item.customerName}
+              </Text>
               <FontAwesome
                 name="edit"
                 size={20}
-                color="#fff"
+                color="#3b7eeb"
                 onPress={() => {
                   editCustomer(1);
                 }}
@@ -296,7 +296,7 @@ export function List({ route, navigation }) {
                 name="remove"
                 size={20}
                 style={{ marginLeft: 4 }}
-                color="#fff"
+                color="#3b7eeb"
                 onPress={() => {
                   removeCustomer(1);
                 }}
@@ -374,6 +374,15 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "#3b7eeb",
+    padding: 10,
+    alignItems: "center",
+    marginVertical: 8,
+    marginHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  orderItem: {
+    backgroundColor: "#eeeeee",
     padding: 10,
     alignItems: "center",
     marginVertical: 8,
