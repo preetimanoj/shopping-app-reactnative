@@ -2,6 +2,8 @@ import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { db } from "./Firebase";
+import { addDoc, collection, getDocs } from "firebase/firestore"
 
 const auth = getAuth();
 export default function Login() {
@@ -20,6 +22,9 @@ export default function Login() {
                 } else {
                     navigation.navigate("Products")
                 }
+
+            const collectionRef = collection(db, "customers")
+            addDoc(collectionRef, { email: user.email })
             })
             .catch(error => alert(error.message))
     }

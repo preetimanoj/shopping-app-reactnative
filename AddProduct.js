@@ -17,14 +17,15 @@ export function AddProduct({ route, navigation }) {
 
     const [imagesrc, setImagesrc] = useState(require("./assets/uploadimg.png"))
     const [imageurl, setimgurl] = useState("./assets/uploadimg.png");
-    const [productName, setproductName] = useState("Add new name");
-    const [description, setDescription] = useState("Add new description");
+    const [productName, setproductName] = useState("New name");
+    const [description, setDescription] = useState("New description");
+    const [category, setCategory] = useState("New Category");
     const [price, setPrice] = useState("0");
     const productsCollectionRef = collection(db, "products");
 
 
     const addProductToFirebase = async () => {
-        let abc = await addDoc(productsCollectionRef, { name: productName, description: description, price: price, img: imageurl });
+        let abc = await addDoc(productsCollectionRef, { name: productName, description: description, price: price, category: category, img: imageurl });
         console.log("add profuct firebase");
         navigation.navigate("Admin")
     }
@@ -41,6 +42,7 @@ export function AddProduct({ route, navigation }) {
                     <TextInput style={styles.name} placeholder="Add a product name" onChangeText={(text) => { setproductName(text) }} />
                     <TextInput style={styles.price} placeholder="$ product price" onChangeText={(text) => { setPrice(text) }} />
                     <TextInput style={styles.description} placeholder="Add a description" onChangeText={(text) => { setDescription(text) }} />
+                    <TextInput style={styles.description} placeholder="Add a category" onChangeText={(text) => { setCategory(text) }} />
                     <TextInput style={styles.description} placeholder="Paste image url" onChangeText={(text) => { setimgurl(text) }} />
 
 
