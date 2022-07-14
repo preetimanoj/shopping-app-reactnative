@@ -1,43 +1,83 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet,Image } from 'react-native';
 import { CartContext } from './CartContext';
+import { db } from "./Firebase";
+import {collection, getDocs,} from "firebase/firestore";
 
+const usersCollectionRef = collection(db, "cart");
 
 export function Cart ({navigation}) {
 
-  const {items, getItemsCount, getTotalPrice} = useContext(CartContext);
+  // const {items, getItemsCount, getTotalPrice} = useContext(CartContext);
   
-  function Totals() {
-    let [total, setTotal] = useState(0);
+
+  const [products, setProducts] = useState();
+  const [ftotal,setFtotal] = useState(0);
+  
+
+    const getCartProducts = async () => {
+      const data = await getDocs(usersCollectionRef);
+      var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      setProducts(temp);
+      var ntemp = temp.map(e=> e.price*e.quantity);
+      var sum = ntemp.reduce(function(a, b) { return a + b; }, 0);
+      setFtotal(sum)
+      console.log("get cart prdts",temp);
+    };
+
+
     useEffect(() => {
-      setTotal(getTotalPrice());
-    });
+      getCartProducts();
+      // setTotal(getTotalPrice());
+    },[]);
+
+    
+  function Totals() { 
     return (
+      <View>
        <View style={styles.cartLineTotal}>
           <Text style={[styles.lineLeft, styles.lineTotal]}>Total</Text>
-          <Text style={styles.lineRight}>$ {total}</Text>
+          <Text style={styles.lineRight}>$ {ftotal}</Text>
+          </View>
+          <Text>All deliveries are currently COD</Text>
+          <Button title='Confirm Order'/>
        </View>
     );
   }
+ 
 
-  function renderItem({item}) {
-    return (
-       <View style={styles.cartLine}>
-          <Text style={styles.lineLeft}>{item.product.name} x {item.qty}</Text>
-          <Text style={styles.lineRight}>$ {item.totalPrice}</Text>
-       </View>
-    );
-  }
   
   return (
-    <FlatList
+    <>
+    
+     <FlatList
       style={styles.itemsList}
       contentContainerStyle={styles.itemsListContainer}
-      data={items}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.product.id.toString()}
+      data={products}
+      renderItem={({item}) => 
+     <>
+    
+     <View style={styles.cartLine}>
+        <Image
+          style={styles.image}
+          source = {{
+            uri: item.img,
+          }}
+        />
+          <Text style={styles.lineLeft}>{item.name} x {item.quantity}</Text>
+          <Text style={styles.lineRight}>$ {item.price * item.quantity}</Text>
+         
+       </View>
+     </>
+
+     }
+      keyExtractor={(item) => item.id}
       ListFooterComponent={Totals}
     />
+   
+    
+    </>
+    
   );
 }
 
@@ -74,4 +114,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginHorizontal: 8,
   },
+  image:{
+    height: 30,
+    width: 30,
+    marginRight: 15
+  }
 });
