@@ -27,11 +27,7 @@ export function Order ({navigation}) {
   
 const navOrderDetails = (item) => {
     navigation.navigate('Order');
-
 }
-
-
-
 
   
   return (
@@ -58,13 +54,6 @@ const navOrderDetails = (item) => {
       keyExtractor={(item) => item.id}
     //   ListFooterComponent={Totals}
     />
-
-
-
-
-
-   
-    
     </>
     
   );

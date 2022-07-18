@@ -35,13 +35,16 @@ export default function App() {
                 <Text onPress={() => {
                   navigation.navigate('Cart');
                 }}> Cart</Text>
-                <Text onPress={() => {
+
+                {/* <Text onPress={() => {
                   navigation.navigate('Admin');
                 }}> Admin</Text>
-                <Text onPress={() => {
+                
+              <CartIcon navigation={navigation}/>, */}
+              <Text onPress={() => {
                   navigation.navigate('Order');
-                }}> Order</Text></>
-            //  <CartIcon navigation={navigation}/>,
+                }}> Order</Text>
+              </>
           })} />
         <Stack.Screen name='ProductDetails' component={ProductDetails}
           options={({ navigation }) => ({
