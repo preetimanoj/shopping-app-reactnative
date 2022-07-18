@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   View,
@@ -19,6 +19,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { async } from "@firebase/util";
+import { RadioButton } from 'react-native-paper';
 
 const collectionRef = collection(db, "categories");
 const customerCollectionRef = collection(db, "customers");
@@ -36,6 +37,8 @@ export function List({ route, navigation }) {
   let [categoryEdit, setCategoryEdit] = useState("");
   let [categoryOldEdit, setCategoryOldEdit] = useState("");
   let [customerOldEdit, setCustomerOldEdit] = useState("");
+  const [checked, setChecked] = useState(""); 
+  let [selOrder, setOrderItem] = useState([]);
 
   let [customerEdit, setCustomerEdit] = useState("");
 
@@ -43,9 +46,9 @@ export function List({ route, navigation }) {
   let [customerList, setCustomerList] = useState([]);
 
   const { list } = route.params;
-  const [products_, setProducts_] = useState();
 
   const [products, setProducts] = useState();
+  const [products_, setProducts_] = useState();
 
   const getProducts = async () => {
     const data = await getDocs(productsCollectionRef);
@@ -65,10 +68,18 @@ export function List({ route, navigation }) {
     setCustomerList(temp);
   };
 
+  const getCartProducts = async () => {
+    const data = await getDocs(orderCollectionRef);
+    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+    setProducts_(temp);
+    // console.log("order list == > ", temp)
+  };
+
   useEffect(() => {
     getProducts();
     getCategoryFromFirebase();
     getCustomersFromFirebase();
+    getCartProducts();
   }, []);
 
   // const data = await getDocs(collectionRef);
@@ -108,16 +119,6 @@ export function List({ route, navigation }) {
     setCategoryEdit(inputCat);
   }
 
-  const navOrderDetails = (item) => {
-    // navigation.navigate('Order');
-    console.log("clicked!!")
-    console.log(item);
-
-  }
-  const getCustomersFromFirebase = async () => {
-    const data = await getDocs(customerCollectionRef);
-    
-    setCustomerList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
   function editCustomerTextInp(inputCat) {
     setCustomerEdit(inputCat);
   }
@@ -128,19 +129,6 @@ export function List({ route, navigation }) {
     getCategoryFromFirebase();
   };
 
-  const getCartProducts = async () => {
-    const data = await getDocs(orderCollectionRef);
-    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-    setProducts_(temp);
-    // console.log("order list == > ", temp)
-  };
-  useEffect(() => {
-    console.log("*************")
-    getCartProducts();
-    // setTotal(getTotalPrice());
-  },[]);
-
-  const renderItem = ({ item }) => <Item title={item.name} />;
   const editCategoryFirebase = async () => {
     const datas = await getDocs(collectionRef);
     var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
@@ -173,6 +161,25 @@ export function List({ route, navigation }) {
 
     setEditCustomerPopupVisible(false);
   };
+  function activateRadioB(item){
+    // console.log(item);
+    setOrderItem(item);
+    setVisible(true);
+  }
+
+  const editFirebaseOrderStatus = async (selectedStatus) => {
+    setChecked(selectedStatus)
+    const datas = await getDocs(collectionRef);
+    var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.customerName }));
+    console.log("))))))))",selOrder.customerName);
+    console.log(selectedStatus);
+    const update = doc(db, "orders", selOrder.id);
+    await updateDoc(update, {
+      orderstat: selectedStatus,
+    });
+    // getCategoryFromFirebase();
+    setVisible(false);
+  }
 
   if (list === "category") {
     return (
@@ -359,10 +366,57 @@ export function List({ route, navigation }) {
         </View>
       </View>
     );
-  } else if (list === "orders") {
+  }else if (list === "orders") {
     return (
       // <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <View>
+        <Dialog
+                visible={visible}
+                onTouchOutside={() => {
+                  setVisible(false);
+                }}
+            >
+                <DialogContent style={{ width: 300 }}>
+                <Text style={{ marginBottom: 20, marginTop: 20 }}>
+                    Current Status: 
+                </Text>
+                <View style={{flexDirection: 'row',justifyContent: "space-evenly", margin: 10}}>
+                <RadioButton 
+                    value="Processing" 
+                    status={ checked === 'Processing' ? 'checked' : 'unchecked' } //if the value of checked is Apple, then select this button
+                    onPress={() => editFirebaseOrderStatus('Processing')} //when pressed, set the value of the checked Hook to 'Apple'
+                />
+                <Text style={{marginLeft: -50, marginTop: 8}}>Processing</Text>
+                </View>
+                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                <RadioButton
+                    value="Order Placed"
+                    status={ checked === 'Order Placed' ? 'checked' : 'unchecked' }
+                    onPress={() => editFirebaseOrderStatus('Order Placed')}
+                />
+                <Text style={{marginLeft: -50, marginTop: 8}}>Order Placed</Text>
+                </View>
+
+                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                <RadioButton
+                    value="Out for Delivery"
+                    status={ checked === 'Out for Delivery' ? 'checked' : 'unchecked' }
+                    onPress={() => editFirebaseOrderStatus('Out for Delivery')}
+                />
+                <Text style={{marginLeft: -50, marginTop: 8}}>Out for Delivery</Text>
+                </View>
+                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                <RadioButton
+                    value="Delivered"
+                    status={ checked === 'Delivered' ? 'checked' : 'unchecked' }
+                    onPress={() => editFirebaseOrderStatus('Delivered')}
+                />
+                <Text style={{marginLeft: -50, marginTop: 8}}>Delivered</Text>
+                </View>
+                {/* <Text>{checked}</Text> */}
+                </DialogContent>
+                
+            </Dialog>
         
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
           ORDERS
@@ -375,19 +429,27 @@ export function List({ route, navigation }) {
             <View style={styles.orderLine}>
                 <Text>Order Id: {item.id}</Text>
                 <Text>Customer: {item.customerName} </Text>
-                <Text>Totla Price: {item.totprice}</Text>
+                <Text>Total Price: {item.totprice}</Text>
                 <Text style={{ fontWeight: 'bold', }}> Order Status: {item.orderstat}</Text>
                 {/* <View style={styles.cartLine}> */}
                 {/* {console.log("item ==>", item.cart.length)} */}
                 
                 {/* </View> */}
-                <Button title="View" onPress={() => {
-                  console.log(item.cart)
-                  navigation.navigate('OrderDetails', {
-                    selOrder: item.cart,
-                  });
-                }}></Button>
-                <Button title="Status"></Button>
+                
+                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                    <Button title="View" onPress={() => {
+                      console.log(item.cart)
+                      navigation.navigate('OrderDetails', {
+                        selOrder: item,
+                        selOrderItems: item.cart,
+                      });
+                    }}></Button>
+                    <Button title="Status" onPress={() => {
+                    activateRadioB(item);
+                    }}></Button>
+
+
+              </View>
             </View>
             }
           keyExtractor={(item) => item.id}
@@ -395,7 +457,7 @@ export function List({ route, navigation }) {
         />
       </View>
     );
-  }else {
+  } else {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
