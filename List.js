@@ -177,7 +177,7 @@ export function List({ route, navigation }) {
     await updateDoc(update, {
       orderstat: selectedStatus,
     });
-    // getCategoryFromFirebase();
+    getCartProducts();
     setVisible(false);
   }
 
@@ -383,8 +383,8 @@ export function List({ route, navigation }) {
                 <View style={{flexDirection: 'row',justifyContent: "space-evenly", margin: 10}}>
                 <RadioButton 
                     value="Processing" 
-                    status={ checked === 'Processing' ? 'checked' : 'unchecked' } //if the value of checked is Apple, then select this button
-                    onPress={() => editFirebaseOrderStatus('Processing')} //when pressed, set the value of the checked Hook to 'Apple'
+                    status={ checked === 'Processing' ? 'checked' : 'unchecked' } 
+                    onPress={() => editFirebaseOrderStatus('Processing')} 
                 />
                 <Text style={{marginLeft: -50, marginTop: 8}}>Processing</Text>
                 </View>
