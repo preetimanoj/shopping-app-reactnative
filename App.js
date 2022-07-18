@@ -11,6 +11,7 @@ import { List } from './List.js';
 import Login from './Login.js';
 import { AddProduct } from './AddProduct.js';
 import { Order } from './OrderStatus.js';
+import { OrderDetails } from './OrderDetails';
 // import { Register } from './Register';
 
 const Stack = createNativeStackNavigator();
@@ -67,6 +68,7 @@ export default function App() {
         <Stack.Screen name='Admin' component={Admin} />
         <Stack.Screen name="List" component={List} />
         <Stack.Screen name="Order" component={Order} />
+        <Stack.Screen name="OrderDetails" component={OrderDetails} />
       </Stack.Navigator>
 
     </NavigationContainer>

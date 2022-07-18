@@ -35,8 +35,8 @@ export function List({ route, navigation }) {
     const data = await getDocs(productsCollectionRef);
     var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
     setProducts(temp);
-    console.log("'asdfasf")
-    console.log(temp);
+    // console.log("'asdfasf")
+    // console.log(temp);
   };
 
 
@@ -104,7 +104,9 @@ export function List({ route, navigation }) {
   getCategoryFromFirebase();
 
   const navOrderDetails = (item) => {
-    navigation.navigate('Order');
+    // navigation.navigate('Order');
+    console.log("clicked!!")
+    console.log(item);
 
   }
   const getCustomersFromFirebase = async () => {
@@ -125,7 +127,7 @@ export function List({ route, navigation }) {
     const data = await getDocs(orderCollectionRef);
     var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
     setProducts_(temp);
-    console.log("order list == > ", temp)
+    // console.log("order list == > ", temp)
   };
   useEffect(() => {
     console.log("*************")
@@ -262,18 +264,23 @@ export function List({ route, navigation }) {
           contentContainerStyle={styles.itemsListContainer}
           data={products_}
           renderItem={({item}) => 
-                <View style={styles.orderLine} onPress={()=>{navOrderDetails(item)}}>
+            <View style={styles.orderLine}>
                 <Text>Order Id: {item.id}</Text>
                 <Text>Customer: {item.customerName} </Text>
                 <Text>Totla Price: {item.totprice}</Text>
                 <Text style={{ fontWeight: 'bold', }}> Order Status: {item.orderstat}</Text>
-                <View style={styles.cartLine}>
+                {/* <View style={styles.cartLine}> */}
                 {/* {console.log("item ==>", item.cart.length)} */}
                 
-                </View>
-        </View>
-        
-
+                {/* </View> */}
+                <Button title="View" onPress={() => {
+                  console.log(item.cart)
+                  navigation.navigate('OrderDetails', {
+                    selOrder: item.cart,
+                  });
+      }}></Button>
+                <Button title="Status"></Button>
+            </View>
         }
           keyExtractor={(item) => item.id}
         //   ListFooterComponent={Totals}
