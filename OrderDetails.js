@@ -19,8 +19,6 @@ export function OrderDetails ({route, navigation}) {
     const { selOrder } = route.params;
     const { selOrderItems } = route.params;
     const [order, setOrder] = useState({});
-    let [orderEdit, setOrderEdit] = useState("");
-    let [visible, setVisible] = useState(false);
     const [checked, setChecked] = React.useState('Apple'); //initial choice
     // console.log("***********",selOrder);
     // console.log("----------------------",selOrderItems);
@@ -43,7 +41,7 @@ export function OrderDetails ({route, navigation}) {
       
   
       return(
-        <View>
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
           ORDER DETAILS
         </Text>
@@ -53,31 +51,16 @@ export function OrderDetails ({route, navigation}) {
           data={order.cart}
           renderItem={({item}) => 
             <View style={styles.orderLine}>
-                <Text>Order Id: {item.id}</Text> 
-                <Text>Product: {item.name} </Text>
+                <Text style={{paddingBottom: 4}}>Order Id: {item.id}</Text> 
+                <Text style={{paddingBottom: 4}}>Product: {item.name} </Text>
                 <Image
                     style={styles.thumb}
                     source={{
                     uri: item.img, 
                     }}
                 />
-                <Text>Total Price: {item.price}</Text>
-                <Text>Total Price: {item.quantity}</Text>
-                {/* <View style={styles.cartLine}> */}
-                {/* {console.log("item ==>", item.cart.length)} */}
-                
-                {/* </View> */}
-                {/* <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
-                    <Button title="Status" onPress={() => {
-                    activateRadioB();
-                    }}></Button>
-                    <Button title="Delete" onPress={() => {
-                    activateRadioB();
-                    }}>
-
-                    </Button>
-
-              </View> */}
+                <Text style={{paddingBottom: 4, paddingTop: 4}}>Total Price: {item.price}</Text>
+                <Text style={{paddingBottom: 4}}>Quantity: {item.quantity}</Text>
             </View>
         }
           keyExtractor={(item) => item.id}
@@ -108,6 +91,7 @@ const styles = StyleSheet.create({
       },
       thumb: {
         height: 260,
+        paddingBottom: 4,
         // borderTopLeftRadius: 16,
         // borderTopRightRadius: 16,
         width: '100%',

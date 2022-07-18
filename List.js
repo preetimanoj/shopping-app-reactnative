@@ -48,7 +48,7 @@ export function List({ route, navigation }) {
   const { list } = route.params;
 
   const [products, setProducts] = useState();
-  const [products_, setProducts_] = useState();
+  const [orders_, setOrders_] = useState();
 
   const getProducts = async () => {
     const data = await getDocs(productsCollectionRef);
@@ -71,7 +71,7 @@ export function List({ route, navigation }) {
   const getCartProducts = async () => {
     const data = await getDocs(orderCollectionRef);
     var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-    setProducts_(temp);
+    setOrders_(temp);
     // console.log("order list == > ", temp)
   };
 
@@ -369,49 +369,51 @@ export function List({ route, navigation }) {
   }else if (list === "orders") {
     return (
       // <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <View>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
         <Dialog
                 visible={visible}
                 onTouchOutside={() => {
                   setVisible(false);
                 }}
             >
-                <DialogContent style={{ width: 300 }}>
+                <DialogContent style={{ width: 300, }}>
                 <Text style={{ marginBottom: 20, marginTop: 20 }}>
-                    Current Status: 
+                    Select the status: 
                 </Text>
-                <View style={{flexDirection: 'row',justifyContent: "space-evenly", margin: 10}}>
-                <RadioButton 
-                    value="Processing" 
-                    status={ checked === 'Processing' ? 'checked' : 'unchecked' } 
-                    onPress={() => editFirebaseOrderStatus('Processing')} 
-                />
-                <Text style={{marginLeft: -50, marginTop: 8}}>Processing</Text>
-                </View>
-                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
-                <RadioButton
-                    value="Order Placed"
-                    status={ checked === 'Order Placed' ? 'checked' : 'unchecked' }
-                    onPress={() => editFirebaseOrderStatus('Order Placed')}
-                />
-                <Text style={{marginLeft: -50, marginTop: 8}}>Order Placed</Text>
-                </View>
+                <View style={{alignItems: "flex-start" }}>
+                  <View style={{flexDirection: 'row',justifyContent: "space-evenly", }}>
+                  <RadioButton 
+                      value="Processing" 
+                      status={ checked === 'Processing' ? 'checked' : 'unchecked' } 
+                      onPress={() => editFirebaseOrderStatus('Processing')} 
+                  />
+                  <Text style={{marginTop: 8}}>Processing</Text>
+                  </View>
+                  <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                  <RadioButton
+                      value="Order Placed"
+                      status={ checked === 'Order Placed' ? 'checked' : 'unchecked' }
+                      onPress={() => editFirebaseOrderStatus('Order Placed')}
+                  />
+                  <Text style={{ marginTop: 8}}>Order Placed</Text>
+                  </View>
 
-                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
-                <RadioButton
-                    value="Out for Delivery"
-                    status={ checked === 'Out for Delivery' ? 'checked' : 'unchecked' }
-                    onPress={() => editFirebaseOrderStatus('Out for Delivery')}
-                />
-                <Text style={{marginLeft: -50, marginTop: 8}}>Out for Delivery</Text>
-                </View>
-                <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
-                <RadioButton
-                    value="Delivered"
-                    status={ checked === 'Delivered' ? 'checked' : 'unchecked' }
-                    onPress={() => editFirebaseOrderStatus('Delivered')}
-                />
-                <Text style={{marginLeft: -50, marginTop: 8}}>Delivered</Text>
+                  <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                  <RadioButton
+                      value="Out for Delivery"
+                      status={ checked === 'Out for Delivery' ? 'checked' : 'unchecked' }
+                      onPress={() => editFirebaseOrderStatus('Out for Delivery')}
+                  />
+                  <Text style={{ marginTop: 8}}>Out for Delivery</Text>
+                  </View>
+                  <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
+                  <RadioButton 
+                      value="Delivered"
+                      status={ checked === 'Delivered' ? 'checked' : 'unchecked' }
+                      onPress={() => editFirebaseOrderStatus('Delivered')}
+                  />
+                  <Text style={{ marginTop: 8}}>Delivered</Text>
+                  </View>
                 </View>
                 {/* <Text>{checked}</Text> */}
                 </DialogContent>
@@ -424,27 +426,27 @@ export function List({ route, navigation }) {
         <FlatList
           style={styles.itemsList}
           contentContainerStyle={styles.itemsListContainer}
-          data={products_}
+          data={orders_}
           renderItem={({item}) => 
             <View style={styles.orderLine}>
-                <Text>Order Id: {item.id}</Text>
-                <Text>Customer: {item.customerName} </Text>
-                <Text>Total Price: {item.totprice}</Text>
-                <Text style={{ fontWeight: 'bold', }}> Order Status: {item.orderstat}</Text>
+                <Text style={{paddingBottom: 4}}>Order Id: {item.id}</Text>
+                <Text style={{paddingBottom: 4}}>Customer: {item.customerName} </Text>
+                <Text style={{paddingBottom: 4}}>Total Price: {item.totprice}</Text>
+                <Text style={{ fontWeight: 'bold', paddingBottom: 6}}> Order Status: {item.orderstat}</Text>
                 {/* <View style={styles.cartLine}> */}
                 {/* {console.log("item ==>", item.cart.length)} */}
                 
                 {/* </View> */}
                 
                 <View style={{flexDirection: 'row',justifyContent: "space-evenly"}}>
-                    <Button title="View" onPress={() => {
+                    <Button title="Details" onPress={() => {
                       console.log(item.cart)
                       navigation.navigate('OrderDetails', {
                         selOrder: item,
                         selOrderItems: item.cart,
                       });
                     }}></Button>
-                    <Button title="Status" onPress={() => {
+                    <Button title="Change Status" onPress={() => {
                     activateRadioB(item);
                     }}></Button>
 
