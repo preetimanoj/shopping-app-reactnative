@@ -45,10 +45,10 @@ const navOrderDetails = (item) => {
             <View style={styles.orderLine} onPress={()=>{navOrderDetails(item)}}>
             <Text>Order Id: {item.id}</Text>
             <Text>Customer: {item.customerName} </Text>
-            <Text>Totla Price: {item.totprice}</Text>
+            <Text>Total Price: {item.totprice}</Text>
             <Text style={{ fontWeight: 'bold', }}> Order Status: {item.orderstat}</Text>
             <View style={styles.cartLine}>
-            {console.log("item ==>", item.cart.length)}
+            {/* {console.log("item ==>", item.cart.length)} */}
             
             </View>
     </View>

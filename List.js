@@ -49,11 +49,16 @@ export function List({ route, navigation }) {
 
   const [products, setProducts] = useState();
   const [orders_, setOrders_] = useState();
+  const [allproducts, setAllProducts] = useState();
+  const [products_, setProducts_] = useState();
 
   const getProducts = async () => {
     const data = await getDocs(productsCollectionRef);
-    var temp = data.docs.map(async (doc) => ({ ...doc.data(), id: doc.id }));
+    var temp = data.docs.map( (doc) => ({ ...doc.data(), id: doc.id }));
     setProducts(temp);
+    setAllProducts(temp);
+
+    
   };
 
   const getCategoryFromFirebase = async () => {
@@ -326,16 +331,17 @@ export function List({ route, navigation }) {
           PRODUCTS
         </Text>
         <FlatList
-          data={products}
+          data={allproducts}
           style={{ marginTop: "10%" }}
           renderItem={({ item }) => (
             <View style={styles.item}>
+              {console.log("item", item, item.name)}
               <TextInput
                 style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}
               >
                 {item.name}{" "}
               </TextInput>
-              <FontAwesome
+              {/* <FontAwesome
                 name="edit"
                 size={20}
                 color="#fff"
@@ -351,7 +357,7 @@ export function List({ route, navigation }) {
                 onPress={() => {
                   removeProducts(1);
                 }}
-              />
+              /> */}
             </View>
           )}
         />
