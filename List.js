@@ -8,13 +8,20 @@ import {
   TextInput,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Dialog, { DialogContent } from 'react-native-popup-dialog';
+import Dialog, { DialogContent } from "react-native-popup-dialog";
 import { db } from "./Firebase";
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore"
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { async } from "@firebase/util";
 
-const collectionRef = collection(db, "categories")
-const customerCollectionRef = collection(db, "customers")
+const collectionRef = collection(db, "categories");
+const customerCollectionRef = collection(db, "customers");
 
 const productsCollectionRef = collection(db, "products");
 
@@ -22,16 +29,17 @@ export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
   let [editPopupVisible, setEditPopupVisible] = useState(false);
   let [editCustomerPopupVisible, setEditCustomerPopupVisible] = useState(false);
+  let [categoryRemovePopup, setCategoryRemovePopup] = useState(false);
 
-  let [categoryAdd, setCategoryAdd] = useState("")
-  let [categoryEdit, setCategoryEdit] = useState("")
-  let [categoryOldEdit, setCategoryOldEdit] = useState("")
+  let [categoryAdd, setCategoryAdd] = useState("");
+  let [categoryEdit, setCategoryEdit] = useState("");
+  let [categoryOldEdit, setCategoryOldEdit] = useState("");
+  let [customerOldEdit, setCustomerOldEdit] = useState("");
 
+  let [customerEdit, setCustomerEdit] = useState("");
 
-  let [customerEdit, setCustomerEdit] = useState("")
-
-  let [categoryList, setCategoryList] = useState([])
-  let [customerList, setCustomerList] = useState([])
+  let [categoryList, setCategoryList] = useState([]);
+  let [customerList, setCustomerList] = useState([]);
 
   const { list } = route.params;
 
@@ -39,22 +47,21 @@ export function List({ route, navigation }) {
 
   const getProducts = async () => {
     const data = await getDocs(productsCollectionRef);
-    var temp = data.docs.map(async(doc) => ({ ...doc.data(), id: doc.id }));
+    var temp = data.docs.map(async (doc) => ({ ...doc.data(), id: doc.id }));
     setProducts(temp);
   };
 
   const getCategoryFromFirebase = async () => {
     const data = await getDocs(collectionRef);
     var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    setCategoryList(temp)
-  }
-  
+    setCategoryList(temp);
+  };
 
   const getCustomersFromFirebase = async () => {
     const data = await getDocs(customerCollectionRef);
     var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    setCustomerList(temp)
-  }
+    setCustomerList(temp);
+  };
 
   useEffect(() => {
     getProducts();
@@ -65,101 +72,99 @@ export function List({ route, navigation }) {
   // const data = await getDocs(collectionRef);
   // setCategoryList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
 
-
   function addtoCategory(type) {
-    setVisible(true)
+    setVisible(true);
   }
 
   function editCategory(type) {
-    console.log("==type=", type)
-    
-    setCategoryOldEdit(type)
-    setEditPopupVisible(true)
-    console.log("===", categoryOldEdit)
+    console.log("==type=", type);
 
+    setCategoryOldEdit(type);
+    setEditPopupVisible(true);
+    console.log("===", categoryOldEdit);
   }
 
   function editCustomer(type) {
-    setEditCustomerPopupVisible(true)
+    setCustomerOldEdit(type);
+    setEditCustomerPopupVisible(true);
   }
 
   function removeCategory(type) {
-    console.log("=====removeCategory");
+    setCategoryOldEdit(type);
+    setCategoryRemovePopup(true);
   }
 
   function addToProducts(type) {
-    navigation.navigate("AddProduct")
+    navigation.navigate("AddProduct");
   }
-
 
   function addCategoryTextInp(inputCat) {
-    setCategoryAdd(inputCat)
+    setCategoryAdd(inputCat);
   }
 
-
   function editCategoryTextInp(inputCat) {
-    setCategoryEdit(inputCat)
-    console.log("===", categoryOldEdit)
-
-
-
-    // console.log("-------", categoryEdit)
-
+    setCategoryEdit(inputCat);
   }
 
   function editCustomerTextInp(inputCat) {
-    setCustomerEdit(inputCat)
+    setCustomerEdit(inputCat);
   }
-
 
   const addCategoryToFirebase = async () => {
-    await addDoc(collectionRef, { name: categoryAdd })
-    setVisible(false)
-    getCategoryFromFirebase()
-  }
-
+    await addDoc(collectionRef, { name: categoryAdd });
+    setVisible(false);
+    getCategoryFromFirebase();
+  };
 
   const editCategoryFirebase = async () => {
     const datas = await getDocs(collectionRef);
     var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    let filtered = await temp.filter((test) => test.name === categoryOldEdit )
+    let filtered = await temp.filter((test) => test.name === categoryOldEdit);
     const update = doc(db, "categories", filtered[0].id);
     await updateDoc(update, {
-      name: categoryEdit
-  });
-    setEditPopupVisible(false)
-  }
+      name: categoryEdit,
+    });
+    getCategoryFromFirebase();
+    setEditPopupVisible(false);
+  };
 
-  const editCustomerFirebase = async () => {
-    console.log("customerEdit----", customerEdit)
-
-
+  const removeCategoryFirebase = async () => {
     const datas = await getDocs(collectionRef);
     var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-    let filtered = await temp.filter((test) => test.name === categoryOldEdit )
-    const update = doc(db, "categories", filtered[0].id);
+    let filtered = await temp.filter((test) => test.name === categoryOldEdit);
+    await deleteDoc(doc(db, "categories", filtered[0].id));
+    getCategoryFromFirebase();
+    setCategoryRemovePopup(false);
+  };
+
+  const editCustomerFirebase = async () => {
+    const datas = await getDocs(customerCollectionRef);
+    var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    let filtered = await temp.filter((test) => test.name === customerOldEdit);
+    const update = doc(db, "customers", filtered[0].id);
     await updateDoc(update, {
-      name: categoryEdit
+      name: categoryEdit,
     });
 
-
-    setEditCustomerPopupVisible(false)
-  }
-
+    setEditCustomerPopupVisible(false);
+  };
 
   if (list === "category") {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-
         <Dialog
           visible={visible}
           onTouchOutside={() => {
-            setVisible(false)
+            setVisible(false);
           }}
         >
           <DialogContent style={{ width: 280 }}>
-            <TextInput style={styles.InputText}
-              value={categoryAdd} onChangeText={(category) => addCategoryTextInp(category)} placeholder="Add a category" />
+            <TextInput
+              style={styles.InputText}
+              value={categoryAdd}
+              onChangeText={(category) => addCategoryTextInp(category)}
+              placeholder="Add a category"
+            />
             <Button
               onPress={() => {
                 addCategoryToFirebase(categoryAdd);
@@ -169,18 +174,20 @@ export function List({ route, navigation }) {
           </DialogContent>
         </Dialog>
 
-
-
-{/* Edit popup */}
+        {/* Edit popup */}
         <Dialog
           visible={editPopupVisible}
           onTouchOutside={() => {
-            setEditPopupVisible(false)
+            setEditPopupVisible(false);
           }}
         >
           <DialogContent style={{ width: 280 }}>
-            <TextInput style={styles.InputText}
-              value={categoryEdit} onChangeText={(category) => editCategoryTextInp(category)} placeholder="Edit category" />
+            <TextInput
+              style={styles.InputText}
+              value={categoryEdit}
+              onChangeText={(category) => editCategoryTextInp(category)}
+              placeholder="Edit category"
+            />
             <Button
               onPress={(input) => {
                 editCategoryFirebase(input);
@@ -190,18 +197,21 @@ export function List({ route, navigation }) {
           </DialogContent>
         </Dialog>
 
+        {/* Edit Customer */}
 
-{/* Edit Customer */}
-
-<Dialog
+        <Dialog
           visible={editCustomerPopupVisible}
           onTouchOutside={() => {
-            setEditCustomerPopupVisible(false)
+            setEditCustomerPopupVisible(false);
           }}
         >
           <DialogContent style={{ width: 280 }}>
-            <TextInput style={styles.InputText}
-              value={categoryAdd} onChangeText={(category) => editCustomerTextInp(category)} placeholder="Edit Customer" />
+            <TextInput
+              style={styles.InputText}
+              value={categoryAdd}
+              onChangeText={(category) => editCustomerTextInp(category)}
+              placeholder="Edit Customer"
+            />
             <Button
               onPress={(input) => {
                 editCustomerFirebase(input);
@@ -211,8 +221,26 @@ export function List({ route, navigation }) {
           </DialogContent>
         </Dialog>
 
+        {/* Remove Category */}
 
-
+        <Dialog
+          visible={categoryRemovePopup}
+          onTouchOutside={() => {
+            setCategoryRemovePopup(false);
+          }}
+        >
+          <DialogContent style={{ width: 300 }}>
+            <Text style={{ marginBottom: 20, marginTop: 20 }}>
+              Are you sure to remove the selected category?
+            </Text>
+            <Button
+              onPress={() => {
+                removeCategoryFirebase();
+              }}
+              title="Yes"
+            />
+          </DialogContent>
+        </Dialog>
 
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
           CATEGORIES
@@ -222,7 +250,9 @@ export function List({ route, navigation }) {
           style={{ marginTop: "10%" }}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <TextInput style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}>
+              <TextInput
+                style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}
+              >
                 {item.name}
               </TextInput>
               <FontAwesome
@@ -240,7 +270,7 @@ export function List({ route, navigation }) {
                 style={{ marginLeft: 4 }}
                 color="#fff"
                 onPress={() => {
-                  removeCategory(1);
+                  removeCategory(item.name);
                 }}
               />
             </View>
@@ -315,28 +345,29 @@ export function List({ route, navigation }) {
           style={{ marginTop: "10%" }}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <TextInput style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}>
+              <TextInput
+                style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}
+              >
                 {item.email}{" "}
+                {/* <FontAwesome
+                  name="edit"
+                  size={20}
+                  style={{ marginLeft: 4 }}
+                  color="#fff"
+                  onPress={() => {
+                    editCustomer();
+                  }}
+                /> */}
                 <FontAwesome
-                name="edit"
-                size={20}
-                style={{ marginLeft: 4 }}
-                color="#fff"
-                onPress={() => {
-                  editCustomer();
-                }}
-              />
-              <FontAwesome
-                name="remove"
-                size={20}
-                style={{ marginLeft: 4 }}
-                color="#fff"
-                onPress={() => {
-                  removeCategory(1);
-                }}
-              />
+                  name="remove"
+                  size={20}
+                  style={{ marginLeft: 4 }}
+                  color="#fff"
+                  onPress={() => {
+                    removeCategory(1);
+                  }}
+                />
               </TextInput>
-              
             </View>
           )}
         />
