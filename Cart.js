@@ -37,7 +37,7 @@ export function Cart ({navigation}) {
       console.log("in add")
       let abc = await addDoc(orderCollectionRef,
         // { itemName: product.name, price:product.price, img:product.img, quantity:qty }
-        {customerName : "Merlin", totprice: ftotal, orderstat: 'Recieved',cart:products }
+        {customerName : "Preeti", totprice: ftotal, orderstat: 'Recieved',cart:products }
         );
       
       
