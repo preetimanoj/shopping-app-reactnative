@@ -8,23 +8,39 @@ import {
   TextInput,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Dialog, { DialogContent } from 'react-native-popup-dialog';
+import Dialog, { DialogContent } from "react-native-popup-dialog";
 import { db } from "./Firebase";
-import { addDoc, collection, getDocs } from "firebase/firestore"
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { async } from "@firebase/util";
 
-const collectionRef = collection(db, "categories")
-const customerCollectionRef = collection(db, "customers")
+const collectionRef = collection(db, "categories");
+const customerCollectionRef = collection(db, "customers");
 
 const productsCollectionRef = collection(db, "products");
 const orderCollectionRef = collection(db, "orders");
 
 export function List({ route, navigation }) {
   let [visible, setVisible] = useState(false);
-  let [categoryAdd, setCategoryAdd] = useState("")
-  let [categoryList, setCategoryList] = useState([])
-  let [customerList, setCustomerList] = useState([])
+  let [editPopupVisible, setEditPopupVisible] = useState(false);
+  let [editCustomerPopupVisible, setEditCustomerPopupVisible] = useState(false);
+  let [categoryRemovePopup, setCategoryRemovePopup] = useState(false);
+
+  let [categoryAdd, setCategoryAdd] = useState("");
+  let [categoryEdit, setCategoryEdit] = useState("");
+  let [categoryOldEdit, setCategoryOldEdit] = useState("");
+  let [customerOldEdit, setCustomerOldEdit] = useState("");
+
+  let [customerEdit, setCustomerEdit] = useState("");
+
+  let [categoryList, setCategoryList] = useState([]);
+  let [customerList, setCustomerList] = useState([]);
 
   const { list } = route.params;
   const [products_, setProducts_] = useState();
@@ -33,75 +49,64 @@ export function List({ route, navigation }) {
 
   const getProducts = async () => {
     const data = await getDocs(productsCollectionRef);
-    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    var temp = data.docs.map(async (doc) => ({ ...doc.data(), id: doc.id }));
     setProducts(temp);
-    // console.log("'asdfasf")
-    // console.log(temp);
   };
 
+  const getCategoryFromFirebase = async () => {
+    const data = await getDocs(collectionRef);
+    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setCategoryList(temp);
+  };
+
+  const getCustomersFromFirebase = async () => {
+    const data = await getDocs(customerCollectionRef);
+    var temp = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    setCustomerList(temp);
+  };
 
   useEffect(() => {
-
     getProducts();
-
+    getCategoryFromFirebase();
+    getCustomersFromFirebase();
   }, []);
-
 
   // const data = await getDocs(collectionRef);
   // setCategoryList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
 
-
   function addtoCategory(type) {
-    setVisible(true)
+    setVisible(true);
   }
 
   function editCategory(type) {
-    console.log("=====", type);
-  }
-  function removeCategory(type) {
-    console.log("=====", type);
-  }
+    console.log("==type=", type);
 
-
-
-
-  function editProducts(type) {
-    console.log("=====", type);
-  }
-  function addToProducts(type) {
-    navigation.navigate("AddProduct")
-  }
-  function removeProducts(type) {
-    console.log("=====", type);
+    setCategoryOldEdit(type);
+    setEditPopupVisible(true);
+    console.log("===", categoryOldEdit);
   }
 
-
-  function addCustomer(type) {
-    console.log("=====", type);
-  }
   function editCustomer(type) {
-    console.log("=====", type);
-  }
-  function removeCustomer(type) {
-    console.log("=====", type);
+    setCustomerOldEdit(type);
+    setEditCustomerPopupVisible(true);
   }
 
+  function removeCategory(type) {
+    setCategoryOldEdit(type);
+    setCategoryRemovePopup(true);
+  }
 
-  const Item = ({ title }) => (
-    <View style={styles.item}>
-      <Text style={styles.title}>{title}</Text>
-    </View>
-  );
+  function addToProducts(type) {
+    navigation.navigate("AddProduct");
+  }
 
   function addCategoryTextInp(inputCat) {
-    setCategoryAdd(inputCat)
+    setCategoryAdd(inputCat);
   }
 
-  const getCategoryFromFirebase = async () => {
-    const data = await getDocs(collectionRef);
-    setCategoryList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+  function editCategoryTextInp(inputCat) {
+    setCategoryEdit(inputCat);
   }
-  getCategoryFromFirebase();
 
   const navOrderDetails = (item) => {
     // navigation.navigate('Order');
@@ -113,15 +118,15 @@ export function List({ route, navigation }) {
     const data = await getDocs(customerCollectionRef);
     
     setCustomerList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+  function editCustomerTextInp(inputCat) {
+    setCustomerEdit(inputCat);
   }
-  getCustomersFromFirebase()
 
   const addCategoryToFirebase = async () => {
-    let addToFirebase = await addDoc(collectionRef, { name: categoryAdd })
-    console.log(addToFirebase?.docs)
-    setVisible(false)
-    getCategoryFromFirebase()
-  }
+    await addDoc(collectionRef, { name: categoryAdd });
+    setVisible(false);
+    getCategoryFromFirebase();
+  };
 
   const getCartProducts = async () => {
     const data = await getDocs(orderCollectionRef);
@@ -136,21 +141,55 @@ export function List({ route, navigation }) {
   },[]);
 
   const renderItem = ({ item }) => <Item title={item.name} />;
+  const editCategoryFirebase = async () => {
+    const datas = await getDocs(collectionRef);
+    var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    let filtered = await temp.filter((test) => test.name === categoryOldEdit);
+    const update = doc(db, "categories", filtered[0].id);
+    await updateDoc(update, {
+      name: categoryEdit,
+    });
+    getCategoryFromFirebase();
+    setEditPopupVisible(false);
+  };
+
+  const removeCategoryFirebase = async () => {
+    const datas = await getDocs(collectionRef);
+    var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    let filtered = await temp.filter((test) => test.name === categoryOldEdit);
+    await deleteDoc(doc(db, "categories", filtered[0].id));
+    getCategoryFromFirebase();
+    setCategoryRemovePopup(false);
+  };
+
+  const editCustomerFirebase = async () => {
+    const datas = await getDocs(customerCollectionRef);
+    var temp = await datas.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+    let filtered = await temp.filter((test) => test.name === customerOldEdit);
+    const update = doc(db, "customers", filtered[0].id);
+    await updateDoc(update, {
+      name: categoryEdit,
+    });
+
+    setEditCustomerPopupVisible(false);
+  };
 
   if (list === "category") {
-
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-
         <Dialog
           visible={visible}
           onTouchOutside={() => {
-            setVisible(false)
+            setVisible(false);
           }}
         >
           <DialogContent style={{ width: 280 }}>
-            <TextInput style={styles.InputText}
-              value={categoryAdd} onChangeText={(category) => addCategoryTextInp(category)} placeholder="Add a category" />
+            <TextInput
+              style={styles.InputText}
+              value={categoryAdd}
+              onChangeText={(category) => addCategoryTextInp(category)}
+              placeholder="Add a category"
+            />
             <Button
               onPress={() => {
                 addCategoryToFirebase(categoryAdd);
@@ -159,6 +198,75 @@ export function List({ route, navigation }) {
             />
           </DialogContent>
         </Dialog>
+
+        {/* Edit popup */}
+        <Dialog
+          visible={editPopupVisible}
+          onTouchOutside={() => {
+            setEditPopupVisible(false);
+          }}
+        >
+          <DialogContent style={{ width: 280 }}>
+            <TextInput
+              style={styles.InputText}
+              value={categoryEdit}
+              onChangeText={(category) => editCategoryTextInp(category)}
+              placeholder="Edit category"
+            />
+            <Button
+              onPress={(input) => {
+                editCategoryFirebase(input);
+              }}
+              title="Edit"
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Customer */}
+
+        <Dialog
+          visible={editCustomerPopupVisible}
+          onTouchOutside={() => {
+            setEditCustomerPopupVisible(false);
+          }}
+        >
+          <DialogContent style={{ width: 280 }}>
+            <TextInput
+              style={styles.InputText}
+              value={categoryAdd}
+              onChangeText={(category) => editCustomerTextInp(category)}
+              placeholder="Edit Customer"
+            />
+            <Button
+              onPress={(input) => {
+                editCustomerFirebase(input);
+              }}
+              title="Edit"
+            />
+          </DialogContent>
+        </Dialog>
+
+        {/* Remove Category */}
+
+        <Dialog
+          visible={categoryRemovePopup}
+          onTouchOutside={() => {
+            setCategoryRemovePopup(false);
+          }}
+        >
+          <DialogContent style={{ width: 300 }}>
+            <Text style={{ marginBottom: 20, marginTop: 20 }}>
+              Are you sure to remove the selected category?
+            </Text>
+            <Button
+              onPress={() => {
+                removeCategoryFirebase();
+              }}
+              title="Yes"
+            />
+          </DialogContent>
+        </Dialog>
+
         <Text style={{ marginTop: "10%", fontWeight: "bold", fontSize: 20 }}>
           CATEGORIES
         </Text>
@@ -177,8 +285,8 @@ export function List({ route, navigation }) {
                 size={20}
                 style={{ marginLeft: 4 }}
                 color="#fff"
-                onPress={() => {
-                  editCategory(1);
+                onPress={(inlut) => {
+                  editCategory(item.name);
                 }}
               />
               <FontAwesome
@@ -187,7 +295,7 @@ export function List({ route, navigation }) {
                 style={{ marginLeft: 4 }}
                 color="#fff"
                 onPress={() => {
-                  removeCategory(1);
+                  removeCategory(item.name);
                 }}
               />
             </View>
@@ -278,10 +386,10 @@ export function List({ route, navigation }) {
                   navigation.navigate('OrderDetails', {
                     selOrder: item.cart,
                   });
-      }}></Button>
+                }}></Button>
                 <Button title="Status"></Button>
             </View>
-        }
+            }
           keyExtractor={(item) => item.id}
         //   ListFooterComponent={Totals}
         />
@@ -302,8 +410,25 @@ export function List({ route, navigation }) {
                 style={{ marginLeft: "2%", color: "white", fontWeight: "bold" }}
               >
                 {item.email}{" "}
+                {/* <FontAwesome
+                  name="edit"
+                  size={20}
+                  style={{ marginLeft: 4 }}
+                  color="#fff"
+                  onPress={() => {
+                    editCustomer();
+                  }}
+                /> */}
+                <FontAwesome
+                  name="remove"
+                  size={20}
+                  style={{ marginLeft: 4 }}
+                  color="#fff"
+                  onPress={() => {
+                    removeCategory(1);
+                  }}
+                />
               </TextInput>
-              
             </View>
           )}
         />
@@ -349,7 +474,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     paddingVertical: 8,
     marginHorizontal: 8,
-  },orderLine:{
+  },
+  orderLine:{
     paddingVertical: 30,
     paddingHorizontal: 20,
     margin: 10,
@@ -357,5 +483,5 @@ const styles = StyleSheet.create({
   },
   cartLine: { 
     flexDirection: 'row',
-  },
+  }
 });
